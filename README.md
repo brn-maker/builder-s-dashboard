@@ -4,7 +4,7 @@ A premium, glassmorphism "Life OS" and command center designed specifically for 
 
 > **Inspiration**: This project was inspired by a tweet from [@orangie](https://x.com/orangie/status/2063763483309576634?s=20) asking how builders building with AI focus on what projects to work on and manage a life dashboard.
 
-![Builder's Dashboard](https://raw.githubusercontent.com/brn-maker/builder-s-dashboard/main/.assets/dashboard-preview.png) *(Preview image placeholder)*
+![Builder's Dashboard](orangie-tweet.png)
 
 ## Features 🚀
 
