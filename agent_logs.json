@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "agent": "coder-agent",
+        "message": "Refactored the authentication module",
+        "status": "working",
+        "timestamp": "2026-06-08T08:18:02.985543"
+    },
+    {
+        "id": 2,
+        "agent": "coder-agent",
+        "message": "All 14 unit tests passed",
+        "status": "success",
+        "timestamp": "2026-06-08T08:18:04.063653"
+    },
+    {
+        "id": 3,
+        "agent": "deploy-agent",
+        "message": "Deployed to staging environment",
+        "status": "success",
+        "timestamp": "2026-06-08T08:18:05.073286"
+    }
+]

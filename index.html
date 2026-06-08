@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Builder's Dashboard — Track your AI-powered shipping velocity. Projects, streaks, focus sessions, and ideas in one place.">
+    <title>Builder's Dashboard — Ship More With AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <header class="dashboard-header">
+        <div class="logo">
+            <span class="logo-icon">⚡</span>
+            <span class="logo-text">Builder's Dashboard</span>
+        </div>
+        <div class="header-right">
+            <span class="current-date" id="headerDate"></span>
+        </div>
+    </header>
+
+    <main class="bento-grid">
+        <!-- Daily Focus — Hero Card -->
+        <section class="card card-hero" id="dailyFocus">
+            <div class="card-glow"></div>
+            <div class="card-inner">
+                <div class="focus-header">
+                    <h1 id="greeting"></h1>
+                    <p class="focus-date" id="focusDate"></p>
+                </div>
+                <div class="focus-priorities">
+                    <h2 class="section-label">Today's Build Priorities</h2>
+                    <ul class="priority-list" id="priorityList"></ul>
+                    <button class="btn-add" id="addPriorityBtn"><span>+</span> Add Priority</button>
+                </div>
+                <div class="focus-quote">
+                    <p class="quote-text" id="quoteText"></p>
+                    <p class="quote-author" id="quoteAuthor"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects -->
+        <section class="card card-wide" id="projectsCard">
+            <div class="card-glow"></div>
+            <div class="card-inner">
+                <div class="card-header">
+                    <h2><span class="card-icon">🚀</span> Projects</h2>
+                    <button class="btn-icon" id="addProjectBtn" title="Add project">+</button>
+                </div>
+                <div class="projects-container" id="projectsContainer"></div>
+            </div>
+        </section>
+
+        <!-- Build Streak -->
+        <section class="card" id="streakCard">
+            <div class="card-glow"></div>
+            <div class="card-inner">
+                <div class="card-header">
+                    <h2><span class="card-icon">🔥</span> Streak</h2>
+                </div>
+                <div class="streak-content">
+                    <div class="streak-count" id="streakCount">0</div>
+                    <div class="streak-label">day streak</div>
+                    <div class="streak-heatmap" id="streakHeatmap"></div>
+                    <button class="btn-ship" id="markShippedBtn">I shipped today 🚢</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Focus Timer -->
+        <section class="card" id="timerCard">
+            <div class="card-glow"></div>
+            <div class="card-inner">
+                <div class="card-header">
+                    <h2><span class="card-icon">⏱️</span> Focus</h2>
+                    <span class="timer-sessions" id="timerSessions">0 sessions</span>
+                </div>
+                <div class="timer-content">
+                    <div class="timer-ring-wrap">
+                        <svg class="timer-ring" viewBox="0 0 120 120">
+                            <circle class="timer-ring-bg" cx="60" cy="60" r="52"/>
+                            <circle class="timer-ring-progress" id="timerProgress" cx="60" cy="60" r="52"/>
+                        </svg>
+                        <div class="timer-display" id="timerDisplay">25:00</div>
+                    </div>
+                    <div class="timer-controls">
+                        <button class="btn-timer" id="timerStartBtn">Start</button>
+                        <button class="btn-timer btn-timer-sec" id="timerResetBtn">Reset</button>
+                    </div>
+                    <div class="timer-mode" id="timerMode">Focus Mode</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ship Log -->
+        <section class="card card-wide" id="shipLogCard">
+            <div class="card-glow"></div>
+            <div class="card-inner">
+                <div class="card-header">
+                    <h2><span class="card-icon">📝</span> Ship Log</h2>
+                </div>
+                <div class="shiplog-content">
+                    <div class="shiplog-input-wrap">
+                        <input type="text" id="shipLogInput" class="shiplog-input" placeholder="What did you ship today?" maxlength="200">
+                        <button class="btn-micro" id="addLogBtn">+</button>
+                    </div>
+                    <div class="shiplog-entries" id="shipLogEntries"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Agent Activity -->
+        <section class="card card-wide" id="agentCard">
+            <div class="card-glow"></div>
+            <div class="card-inner">
+                <div class="card-header">
+                    <h2><span class="card-icon">🤖</span> Agent Activity</h2>
+                    <span class="agent-status-indicator" id="agentStatusPulse"></span>
+                </div>
+                <div class="agent-terminal" id="agentTerminal">
+                    <!-- Logs populated via JS -->
+                    <div class="terminal-entry"><span class="term-time">[System]</span> <span class="term-agent">Dashboard</span> <span class="term-msg">Awaiting agent connections on port 8080...</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ideas Backlog -->
+        <section class="card card-wide" id="ideasCard">
+            <div class="card-glow"></div>
+            <div class="card-inner">
+                <div class="card-header">
+                    <h2><span class="card-icon">💡</span> Ideas</h2>
+                </div>
+                <div class="ideas-content">
+                    <div class="ideas-input-wrap">
+                        <input type="text" id="ideaInput" class="idea-input" placeholder="New project idea..." maxlength="120">
+                        <button class="btn-micro" id="addIdeaBtn">+</button>
+                    </div>
+                    <div class="ideas-list" id="ideasList"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Weekly Stats -->
+        <section class="card card-wide" id="statsCard">
+            <div class="card-glow"></div>
+            <div class="card-inner">
+                <div class="card-header">
+                    <h2><span class="card-icon">📊</span> This Week</h2>
+                </div>
+                <div class="stats-content" id="statsContent">
+                    <div class="stat-item">
+                        <div class="stat-value" id="statSessions">0</div>
+                        <div class="stat-label">Focus Sessions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statShipped">0</div>
+                        <div class="stat-label">Items Shipped</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statProjects">0</div>
+                        <div class="stat-label">Active Projects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statStreak">0</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Item</h3>
+                <button class="btn-icon modal-close" id="modalClose">×</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
