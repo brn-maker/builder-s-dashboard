@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local agent activity log (may contain project details)
+agent_logs.json
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+
+# Operating system / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
