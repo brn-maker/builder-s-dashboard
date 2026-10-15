@@ -1,86 +1,133 @@
-# Builder's Dashboard ⚡️
+# Builder's Dashboard ⚡
 
-A premium, glassmorphism "Life OS" and command center designed specifically for builders, makers, and those shipping with AI agents. Track your projects, deep work sessions, shipping streaks, and let your AI agents report their progress directly to your dashboard in real-time.
+**A local-first command center for people building with AI.** Track projects, daily priorities, shipping streaks, focus sessions, ideas, and activity reported by your AI coding agents.
 
-> **Inspiration**: This project was inspired by a tweet from [@orangie](https://x.com/orangie/status/2063763483309576634?s=20) asking how builders building with AI focus on what projects to work on and manage a life dashboard.
+Builder's Dashboard is an early-stage open-source project. Today, its agent integration accepts activity events over a small local HTTP API and displays them in the dashboard. It does **not** orchestrate agents, assign tasks, or verify their work.
 
-![Builder's Dashboard - Inspiration](orangie-tweet.png)
+- **Local-first:** personal dashboard data is stored in your browser's `localStorage`.
+- **Lightweight:** plain HTML, CSS, JavaScript, and Python; no frontend build step.
+- **Agent-friendly:** any tool that can send an HTTP POST can report an event.
+- **Open source:** MIT licensed.
 
-## Screenshots
+## What it includes
 
-![Builder's Dashboard - Main View](dashboard-screenshot-1.png)
-![Builder's Dashboard - Agent Activity](dashboard-screenshot-2.png)
+- **Daily focus** — keep today's priorities visible.
+- **Project tracker** — move projects through ideating, building, and shipped.
+- **Build streak** — track days you mark as shipped.
+- **Focus timer** — built-in Pomodoro-style timer.
+- **Ship log** — record what you accomplished.
+- **Ideas backlog** — capture ideas and promote them into projects.
+- **Agent activity feed** — view recent agent messages reported to the local API.
 
-## Features 🚀
+## Quick start
 
-- **100% Local & Private**: No cloud databases. All personal data (goals, streaks, ship logs) is saved instantly to your browser's `localStorage`.
-- **Zero Dependencies**: Pure HTML, CSS, and Vanilla JS. No build steps, no Node_modules. Just run it.
-- **Glassmorphism Bento UI**: A beautiful dark-mode interface designed to be visually stunning, reducing cognitive load with a "Calm UX" approach.
-- **Agent API Integration**: Includes a tiny Python server that acts as a local API webhook. External AI coding agents (like Claude Code, Aider, Cursor) can `POST` their progress logs, which instantly appear in the dashboard's scrolling terminal feed.
-- **7 Core Modules**:
-  1. **Daily Focus**: Top priorities and motivational builder quotes.
-  2. **Projects Kanban**: Track active projects (Ideating → Building → Shipped).
-  3. **Build Streak Heatmap**: A GitHub-style 21-day heatmap tracking your shipping velocity.
-  4. **Focus Timer**: A 25/5 Pomodoro timer built with pure SVG animations.
-  5. **Ship Log**: A daily micro-journal logging what you deployed.
-  6. **Ideas Backlog**: Capture ideas and promote them to projects with one click.
-  7. **Agent Activity**: Real-time terminal feed of your AI agents working in the background.
+### Requirements
 
-## How to Run Locally 💻
+- Python 3.8 or newer
+- A modern browser
 
-You can run this dashboard simply by opening `index.html` in your browser. However, **to enable the real-time AI Agent Activity feed**, you should run the included Python server.
+No Python packages need to be installed.
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/brn-maker/builder-s-dashboard.git
    cd builder-s-dashboard
    ```
-2. Start the local Python API server:
+
+2. Start the local server:
+
    ```bash
    python3 server.py
    ```
-3. Open your browser and navigate to:
-   ```
-   http://localhost:8080
-   ```
 
-## Integrating Your AI Agents 🤖
+3. Open [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
-Because the dashboard runs a local API on port `8080`, your AI coding agents can easily report their progress to the dashboard's terminal feed. 
+Keep the terminal open while using the dashboard. Stop the server with `Ctrl+C`.
 
-Whenever an agent finishes a task, hits an error, or makes a deployment, simply have it send an HTTP POST request to `/api/agent`.
+> Opening `index.html` directly can show the dashboard's browser-only features, but the agent activity feed requires the Python server.
 
-### cURL Example
-Drop this into an automated script or tell your CLI agent (like Claude Code) to execute it:
+## Send a test agent event
+
+With the server running, open another terminal and run:
+
 ```bash
-curl -X POST http://localhost:8080/api/agent \
-     -H "Content-Type: application/json" \
-     -d '{
-           "agent": "coder-agent", 
-           "message": "Refactored the authentication module", 
-           "status": "success"
-         }'
+curl -X POST http://127.0.0.1:8080/api/agent \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "agent": "demo-agent",
+    "message": "Finished the first dashboard integration",
+    "status": "success"
+  }'
 ```
 
-### Python Example
-If you're building a custom LangChain or AutoGen agent:
+Refresh or wait a moment for the event to appear in the activity feed.
+
+Supported statuses: `info`, `working`, `success`, and `error`.
+
+### Python example (standard library only)
+
 ```python
-import requests
+import json
+from urllib.request import Request, urlopen
 
-def report_to_dashboard(agent_name, message, status="info"):
+def report_to_dashboard(agent, message, status="info"):
+    payload = json.dumps({
+        "agent": agent,
+        "message": message,
+        "status": status,
+    }).encode("utf-8")
+
+    request = Request(
+        "http://127.0.0.1:8080/api/agent",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
     try:
-        requests.post("http://localhost:8080/api/agent", json={
-            "agent": agent_name,
-            "message": message,
-            "status": status # options: 'success', 'error', 'working', 'info'
-        })
-    except:
-        pass # Ignore if dashboard isn't running
+        with urlopen(request, timeout=2) as response:
+            return response.status == 200
+    except OSError:
+        # The dashboard may not be running; don't fail the agent task.
+        return False
 ```
 
-### Agent Configuration Prompt
-To get CLI agents like **Claude Code** or **Aider** to report to the dashboard, just add this to your custom instructions or prompt:
-> *"Whenever you successfully complete a coding task, fix a bug, or make a commit, you MUST run this command in the terminal to report your progress: `curl -X POST http://localhost:8080/api/agent -H "Content-Type: application/json" -d '{"agent": "my-ai-agent", "message": "<brief summary of what you did>", "status": "success"}'`"*
+### Connect a coding agent
+
+Configure your agent or workflow to send a POST request to `http://127.0.0.1:8080/api/agent` after a meaningful event. For example, an agent can report a completed task, a failed test, or a commit. Keep messages short and avoid sending secrets, credentials, private user data, or full source files.
+
+This is a simple event-reporting endpoint, not a native integration with every coding agent. The exact setup depends on the agent and its hooks or automation features.
+
+## Privacy and security
+
+- The server binds to `127.0.0.1` by default so it is reachable only from the same machine.
+- Agent activity is stored in `agent_logs.json` in the project directory; the latest 50 events are retained.
+- Personal dashboard data is stored separately in browser `localStorage`.
+- Do not expose this server to the public internet or bind it to a network interface you do not trust.
+- Events may contain project details. Review what your agent sends before enabling automated reporting.
+- This project is an early-stage tool; review the code and report security concerns before using it with sensitive workflows.
+
+See [SECURITY.md](SECURITY.md) for reporting guidance.
+
+## Roadmap
+
+The roadmap is intentionally shaped by user feedback. Possible next steps:
+
+- [ ] Add a short demo video and clearer screenshots.
+- [ ] Add automated tests for the agent API.
+- [ ] Improve project-aware event grouping and filtering.
+- [ ] Explore a daily summary of reported work.
+- [ ] Document community-maintained agent adapters.
+
+These are ideas, not promises or existing features. Please open an issue to describe your workflow and the problem you want solved.
+
+## Contributing
+
+Bug reports, documentation improvements, feature ideas, and small pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+
+For useful feedback, please include your operating system, Python version, steps to reproduce, and what you expected to happen. Never include API keys or other secrets in an issue.
 
 ## License
-MIT License. Feel free to fork, vibe code, and build upon this to create your ultimate personal command center!
+
+MIT. See [LICENSE](LICENSE).
